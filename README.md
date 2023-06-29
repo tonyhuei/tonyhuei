@@ -151,8 +151,10 @@ drop chinese english matha mathb mathc w4s4634 w4s4635 w4s4636 w4s4641 w4s4642 w
  w4s1374 w4s1375 w4s1376 w4s327 w4s3281 w4s3286 w4s2134 w4s2144 w4s2154 w4s2134 w4s2144 w4s2154 w4s4683 w4s109  w4mtc05 w4mtc04  w4s325 w4s3261 w4s2125 w4p238 w4p239 w4p241 w4p242 w3td09 w4s317 w4s316 ///
  w4s447 w4s448 w4s445 w4s446 w4s454 w4mtc30 w4etc30 w4ctc30 w3s430 w3s434 w3s435 w3s436 w3s437 w3s438 w3s441 w3s443 w3s444 w4t106 w4p235 w4p236 w4p116 w4p117 w4p244 w4p411 w3mtc18 w3mtc19 w4p410 w4p411 ///
  w4mtc08 w4etc08 w4ctc08 w4s134 w4s107 w3s114 w3s214 w3p706 w4s460 w4dtc01 w4mtc03  w3t216 w3td06 w3td03 w3s3182 w3s3252  w3t210 w3t211 w4t228 w3s128  w4t113 w4t115 w4t111  w4p237 w4p243 w4s318 w3s124 ///
- w3s125  w4p2151 w4ctc25 w4etc25 w4mtc25 w3t212 w4t112 w4t219 w3t319 w3ctc17 w3etc17 w3mtc17 w3etc04 w4ctc06 w4etc06 w4mtc06 w3s105 w4dtc02  w3s467 w3s107 w3s445 w3p207 w3p208 w4s116 w3t108 w3t109
-gen cramnum= w4s1081+w4s1082+w4s1083
+ w3s125  w4p2151 w4ctc25 w4etc25 w4mtc25 w3t212 w4t112 w4t219 w3t319 w3ctc17 w3etc17 w3mtc17 w3etc04 w4ctc06 w4etc06 w4mtc06 w3s105 w4dtc02  w3s467 w3s107 w3s445 w3p207 w3p208 w4s116 w3t108 w3t109 ///
+ 
+egen cramnum=rowtotal(w4s1081 w4s1082 w4s1083)
+drop if cramnum==297
 gen coretotal= g1a+g2a+g3a
 replace w4faedu = . if w4faedu==99
 replace w4moedu = . if w4moedu==99
@@ -168,9 +170,6 @@ replace wfaedu = wmoedu if wfaedu==.
 replace wmoedu = wfaedu if wmoedu==.
 gen paredu= (wfaedu+ wmoedu)/2
 drop w3parent w3spouse w3faedu w3moedu w4p401 w4p104 w3p104
-gen cramdum=0 if cramnum==0
-replace cramdum=1 if cramnum>=1
-replace cramnum=. if cramnum==297
 drop if w4sch_id=="047" //刪除同學的學校沒寫學校問卷
 gen scenhan=w4h6251+w4h6252+w4h6253+w4h6254+w4h6255+w4h6256+w4h6258
 replace scenhan=0 if scenhan==693
@@ -187,19 +186,24 @@ label define w4h365 2 "各年級都有" 1 "部分年級有" 0 "都沒有" 97 "�
 label define w4h364 2 "各年級都有" 1 "部分年級有" 0 "都沒有" 97 "不合理值" 99 "遺漏值", replace
 label define w4h362 2 "各年級都有" 1 "部分年級有" 0 "都沒有" 1 "特殊情況" 97 "不合理值" 99 "遺漏值", replace
 replace w4h365=0 if w4h365==3
-replace w4h365=1 if w4h365==2
+replace w4h365=4 if w4h365==2
 replace w4h365=2 if w4h365==1
+replace w4h365=1 if w4h365==4
 replace w4h364=0 if w4h364==3
-replace w4h364=1 if w4h364==2
+replace w4h364=4 if w4h364==2
 replace w4h364=2 if w4h364==1
+replace w4h364=1 if w4h364==4
 replace w4h362=0 if w4h362==3
-replace w4h362=1 if w4h362==2
+replace w4h362=5 if w4h362==2
 replace w4h362=2 if w4h362==1
 replace w4h362=1 if w4h362==4
+replace w4h362=1 if w4h362==5
 replace w4h3273=2 if w4h3273==1
 replace w4h3274=3 if w4h3274==1
+gen scaward=w4h3272+w4h3273+w4h3274
 replace w4h3631=3 if w4h3631==1
 replace w4h3632=2 if w4h3632==1
+gen schelpcla=w4h3631+w4h3632+w4h3634
 gen scteamatt= w4s3333+ w4s3334+ w4s3335
 drop w4s3333 w4s3334 w4s3335
 gen outclubatt= w4s3303+w4s3304+w4s3305+w4s3313+w4s3314+w4s3315
@@ -242,6 +246,7 @@ gen freecram= w4s1121+ w4s1122+ w4s1123
 gen ctcfor3= w4ctc321+ w4ctc322+ w4ctc323+ w4ctc324+ w4ctc325
 gen etcfor3= w4etc321+ w4etc322+ w4etc323+ w4etc324+ w4etc325
 gen mtcfor3= w4mtc321+ w4mtc322+ w4mtc323+ w4mtc324+ w4mtc325
+gen dtcfor3= w4dtc151+ w4dtc152+ w4dtc153+ w4dtc154+ w4dtc155
 replace cram12=1 if cram12==2
 replace cram3=1 if cram3==3
 gen teclear= w4s3243+ w4s3244+ w4s3245
@@ -256,125 +261,121 @@ replace  w3p110 =0 if w3p110 ==1
 replace  w3p110 =1 if w3p110 ==2
 replace  w4p110 =0 if w4p110 ==1
 replace  w4p110 =1 if w4p110 ==2
-label define w3mtc30 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+gen familyhealthcare= w3p110+ w4p110
+label define w3mtc30 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3mtc30=0 if w3mtc30==5
-replace w3mtc30=1 if w3mtc30==4
-replace w3mtc30=2 if w3mtc30==3
-replace w3mtc30=3 if w3mtc30==2
-replace w3mtc30=4 if w3mtc30==1
-label define w3mtc31 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3mtc30=0 if w3mtc30==4
+replace w3mtc30=6 if w3mtc30==3
+replace w3mtc30=3 if w3mtc30==1
+replace w3mtc30=1 if w3mtc30==6
+label define w3mtc31 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3mtc31=0 if w3mtc31==5
-replace w3mtc31=1 if w3mtc31==4
-replace w3mtc31=2 if w3mtc31==3
-replace w3mtc31=3 if w3mtc31==2
-replace w3mtc31=4 if w3mtc31==1
-label define w3mtc32 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3mtc31=0 if w3mtc31==4
+replace w3mtc31=6 if w3mtc31==3
+replace w3mtc31=3 if w3mtc31==1
+replace w3mtc31=1 if w3mtc31==6
+label define w3mtc32 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3mtc32=0 if w3mtc32==5
-replace w3mtc32=1 if w3mtc32==4
-replace w3mtc32=2 if w3mtc32==3
-replace w3mtc32=3 if w3mtc32==2
-replace w3mtc32=4 if w3mtc32==1
-label define w3mtc33 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3mtc32=0 if w3mtc32==4
+replace w3mtc32=6 if w3mtc32==3
+replace w3mtc32=3 if w3mtc32==1
+replace w3mtc32=1 if w3mtc32==6
+label define w3mtc33 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3mtc33=0 if w3mtc33==5
-replace w3mtc33=1 if w3mtc33==4
-replace w3mtc33=2 if w3mtc33==3
-replace w3mtc33=3 if w3mtc33==2
-replace w3mtc33=4 if w3mtc33==1
-label define w3mtc34 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3mtc33=0 if w3mtc33==4
+replace w3mtc33=6 if w3mtc33==3
+replace w3mtc33=3 if w3mtc33==1
+replace w3mtc33=1 if w3mtc33==6
+label define w3mtc34 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3mtc34=0 if w3mtc34==5
-replace w3mtc34=1 if w3mtc34==4
-replace w3mtc34=2 if w3mtc34==3
-replace w3mtc34=3 if w3mtc34==2
-replace w3mtc34=4 if w3mtc34==1
-label define w3mtc35 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3mtc34=0 if w3mtc34==4
+replace w3mtc34=6 if w3mtc34==3
+replace w3mtc34=3 if w3mtc34==1
+replace w3mtc34=1 if w3mtc34==6
+label define w3mtc35 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3mtc35=0 if w3mtc35==5
-replace w3mtc35=1 if w3mtc35==4
-replace w3mtc35=2 if w3mtc35==3
-replace w3mtc35=3 if w3mtc35==2
-replace w3mtc35=4 if w3mtc35==1
-label define w3ctc30 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3mtc35=0 if w3mtc35==4
+replace w3mtc35=6 if w3mtc35==3
+replace w3mtc35=3 if w3mtc35==1
+replace w3mtc35=1 if w3mtc35==6
+label define w3ctc30 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3ctc30=0 if w3ctc30==5
-replace w3ctc30=1 if w3ctc30==4
-replace w3ctc30=2 if w3ctc30==3
-replace w3ctc30=3 if w3ctc30==2
-replace w3ctc30=4 if w3ctc30==1
-label define w3ctc31 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3ctc30=0 if w3ctc30==4
+replace w3ctc30=6 if w3ctc30==3
+replace w3ctc30=3 if w3ctc30==1
+replace w3ctc30=1 if w3ctc30==6
+label define w3ctc31 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3ctc31=0 if w3ctc31==5
-replace w3ctc31=1 if w3ctc31==4
-replace w3ctc31=2 if w3ctc31==3
-replace w3ctc31=3 if w3ctc31==2
-replace w3ctc31=4 if w3ctc31==1
-label define w3ctc32 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3ctc31=0 if w3ctc31==4
+replace w3ctc31=6 if w3ctc31==3
+replace w3ctc31=3 if w3ctc31==1
+replace w3ctc31=1 if w3ctc31==6
+label define w3ctc32 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3ctc32=0 if w3ctc32==5
-replace w3ctc32=1 if w3ctc32==4
-replace w3ctc32=2 if w3ctc32==3
-replace w3ctc32=3 if w3ctc32==2
-replace w3ctc32=4 if w3ctc32==1
-label define w3ctc33 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3ctc32=0 if w3ctc32==4
+replace w3ctc32=6 if w3ctc32==3
+replace w3ctc32=3 if w3ctc32==1
+replace w3ctc32=1 if w3ctc32==6
+label define w3ctc33 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3ctc33=0 if w3ctc33==5
-replace w3ctc33=1 if w3ctc33==4
-replace w3ctc33=2 if w3ctc33==3
-replace w3ctc33=3 if w3ctc33==2
-replace w3ctc33=4 if w3ctc33==1
-label define w3ctc34 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3ctc33=0 if w3ctc33==4
+replace w3ctc33=6 if w3ctc33==3
+replace w3ctc33=3 if w3ctc33==1
+replace w3ctc33=1 if w3ctc33==6
+label define w3ctc34 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3ctc34=0 if w3ctc34==5
-replace w3ctc34=1 if w3ctc34==4
-replace w3ctc34=2 if w3ctc34==3
-replace w3ctc34=3 if w3ctc34==2
-replace w3ctc34=4 if w3ctc34==1
-label define w3ctc35 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3ctc34=0 if w3ctc34==4
+replace w3ctc34=6 if w3ctc34==3
+replace w3ctc34=3 if w3ctc34==1
+replace w3ctc34=1 if w3ctc34==6
+label define w3ctc35 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3ctc35=0 if w3ctc35==5
-replace w3ctc35=1 if w3ctc35==4
-replace w3ctc35=2 if w3ctc35==3
-replace w3ctc35=3 if w3ctc35==2
-replace w3ctc35=4 if w3ctc35==1
-label define w3etc30 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3ctc35=0 if w3ctc35==4
+replace w3ctc35=6 if w3ctc35==3
+replace w3ctc35=3 if w3ctc35==1
+replace w3ctc35=1 if w3ctc35==6
+label define w3etc30 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3etc30=0 if w3etc30==5
-replace w3etc30=1 if w3etc30==4
-replace w3etc30=2 if w3etc30==3
-replace w3etc30=3 if w3etc30==2
-replace w3etc30=4 if w3etc30==1
-label define w3etc31 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3etc30=0 if w3etc30==4
+replace w3etc30=6 if w3etc30==3
+replace w3etc30=3 if w3etc30==1
+replace w3etc30=1 if w3etc30==6
+label define w3etc31 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3etc31=0 if w3etc31==5
-replace w3etc31=1 if w3etc31==4
-replace w3etc31=2 if w3etc31==3
-replace w3etc31=3 if w3etc31==2
-replace w3etc31=4 if w3etc31==1
-label define w3etc32 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3etc31=0 if w3etc31==4
+replace w3etc31=6 if w3etc31==3
+replace w3etc31=3 if w3etc31==1
+replace w3etc31=1 if w3etc31==6
+label define w3etc32 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3etc32=0 if w3etc32==5
-replace w3etc32=1 if w3etc32==4
-replace w3etc32=2 if w3etc32==3
-replace w3etc32=3 if w3etc32==2
-replace w3etc32=4 if w3etc32==1
-label define w3etc33 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3etc32=0 if w3etc32==4
+replace w3etc32=6 if w3etc32==3
+replace w3etc32=3 if w3etc32==1
+replace w3etc32=1 if w3etc32==6
+label define w3etc33 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3etc33=0 if w3etc33==5
-replace w3etc33=1 if w3etc33==4
-replace w3etc33=2 if w3etc33==3
-replace w3etc33=3 if w3etc33==2
-replace w3etc33=4 if w3etc33==1
-label define w3etc34 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3etc33=0 if w3etc33==4
+replace w3etc33=6 if w3etc33==3
+replace w3etc33=3 if w3etc33==1
+replace w3etc33=1 if w3etc33==6
+label define w3etc34 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3etc34=0 if w3etc34==5
-replace w3etc34=1 if w3etc34==4
-replace w3etc34=2 if w3etc34==3
-replace w3etc34=3 if w3etc34==2
-replace w3etc34=4 if w3etc34==1
-label define w3etc35 4 "一定有" 3 "有時" 2 "偶爾" 1 "從不" 0 "沒出作業" 97 "不合理值" 99 "未填答", replace
+replace w3etc34=0 if w3etc34==4
+replace w3etc34=6 if w3etc34==3
+replace w3etc34=3 if w3etc34==1
+replace w3etc34=1 if w3etc34==6
+label define w3etc35 3 "一定有" 2 "有時" 1 "偶爾" 0 "從不+沒出作業" 97 "不合理值" 99 "未填答", replace
 replace w3etc35=0 if w3etc35==5
-replace w3etc35=1 if w3etc35==4
-replace w3etc35=2 if w3etc35==3
-replace w3etc35=3 if w3etc35==2
-replace w3etc35=4 if w3etc35==1
+replace w3etc35=0 if w3etc35==4
+replace w3etc35=6 if w3etc35==3
+replace w3etc35=3 if w3etc35==1
+replace w3etc35=1 if w3etc35==6
 gen cthm= w3ctc30+ w3ctc31+ w3ctc32+ w3ctc33+ w3ctc34+ w3ctc35
 gen mahm= w3mtc30+ w3mtc31+ w3mtc32+ w3mtc33+ w3mtc34+ w3mtc35
 gen enhm= w3etc30+ w3etc31+ w3etc32+ w3etc33+ w3etc34+ w3etc35
 gen loan= w4p2333+w4p2334+w4p2335
 label define w3p110 0 "沒有" 1 "有" 97 "不合理值" 99 "未填答", replace
 label define w4p110 0 "沒有" 1 "有" 97 "不合理值" 99 "未填答", replace
-replace  w3p110 =0 if w3p110 ==1
-replace  w3p110 =1 if w3p110 ==2
-replace  w4p110 =0 if w4p110 ==1
-replace  w4p110 =1 if w4p110 ==2
-gen familyhealthcare= w3p110+ w4p110
 label variable familyhealthcare "家人長期臥病"
 label define w4s444 0 "從來沒有" 1 "偶爾有" 2 "有時有" 3 "經常有" 97 "不合理值" 99 "未填答", replace
 replace w4s444=0 if w4s444==1
@@ -465,15 +466,16 @@ replace w4s319=3.5 if w4s319==3
 replace w4s319=5.5 if w4s319==4
 replace w4s319=7 if w4s319==5
 replace w3p602=2.5 if w3p602==2
-replace w3p602=4 if w3p602==3
+replace w3p602=9 if w3p602==3
 replace w3p602=7.5 if w3p602==4
+replace w3p602=4 if w3p602==9
 replace w3p602=15 if w3p602==5
 replace w3p602=30 if w3p602==6
 replace enhm=. if enhm==594
 replace enhm=18 if enhm==117
 replace enhm=16 if enhm==113
 replace enhm=15 if enhm==112
-replace  scteamatt=. if  scteamatt==297
+replace scteamatt=. if scteamatt==297
 replace outclubatt=0 if outclubatt==297
 replace outclubatt=1 if outclubatt==298
 replace outclubatt=2 if outclubatt==299
@@ -501,23 +503,27 @@ replace familyhealthcare=0 if familyhealthcare==99
 replace familyhealthcare=1 if familyhealthcare==100
 replace discussenroll=. if discussenroll==297
 label define w4p202 3 "非常需要" 2 "需要" 1 "不需要" 0 "非常不需要" 97 "不合理值" 99 "未填答", replace
-replace w4p202=3 if w4p202==1
+replace w4p202=5 if w4p202==1
 replace w4p202=1 if w4p202==3
+replace w4p202=3 if w4p202==5
 replace w4p202=0 if w4p202==4
 label define w4p412 3 "非常需要" 2 "需要" 1 "不需要" 0 "非常不需要" 97 "不合理值" 99 "未填答", replace
-replace w4p412=3 if w4p412==1
+replace w4p412=5 if w4p412==1
 replace w4p412=1 if w4p412==3
+replace w4p412=3 if w4p412==5
 replace w4p412=0 if w4p412==4
 replace w4p202=. if w4p202==99
 replace w4p202=. if w4p202==97
 label define w4s110 3 "非常有幫助" 2 "有幫助" 1 "沒有幫助" 0 "非常沒有幫助" 97 "不合理值" 99 "未填答", replace
 replace w4s110=0 if w4s110==4
-replace w4s110=1 if w4s110==3
+replace w4s110=5 if w4s110==3
 replace w4s110=3 if w4s110==1
+replace w4s110=1 if w4s110==5
 label define w4s111 3 "非常有幫助" 2 "有幫助" 1 "沒有幫助" 0 "非常沒有幫助" 97 "不合理值" 99 "未填答", replace
 replace w4s111=0 if w4s111==4
-replace w4s111=1 if w4s111==3
+replace w4s111=5 if w4s111==3
 replace w4s111=3 if w4s111==1
+replace w4s111=1 if w4s111==5
 gen crammathhelp= w4s110+ w4s111
 replace crammathhelp=. if crammathhelp==198
 replace crammathhelp=. if crammathhelp==97
@@ -526,12 +532,14 @@ replace crammathhelp=2 if crammathhelp==101
 replace crammathhelp=3 if crammathhelp==102
 label define w4p318 3 "非常有幫助" 2 "有幫助" 1 "沒有幫助" 0 "非常沒有幫助" 97 "不合理值" 99 "未填答", replace
 replace w4p318=0 if w4p318==4
-replace w4p318=1 if w4p318==3
+replace w4p318=5 if w4p318==3
 replace w4p318=3 if w4p318==1
+replace w4p318=1 if w4p318==5
 label define w4p319 3 "非常有幫助" 2 "有幫助" 1 "沒有幫助" 0 "非常沒有幫助" 97 "不合理值" 99 "未填答", replace
 replace w4p319=0 if w4p319==4
-replace w4p319=1 if w4p319==3
+replace w4p319=5 if w4p319==3
 replace w4p319=3 if w4p319==1
+replace w4p319=1 if w4p319==5
 gen parentmathcramhelp= w4p318+ w4p319
 replace parentmathcramhelp=. if parentmathcramhelp==198
 replace parentmathcramhelp=0 if parentmathcramhelp==99
@@ -979,10 +987,19 @@ label drop w4td07
 replace w4td07=0 if w4td07==3|w4td07==2
 replace w3p201=0 if w3p201==1|w3p201==3
 replace w3p201=1 if w3p201==2
-replace w3s460=3 if w3s460==2
-replace w3s460=5 if w3s460==3
+replace w4p219=0 if w4p219==1
+replace w4p219=1 if w4p219==2
+replace w4p219=2 if w4p219==3
+replace w4p219=3 if w4p219==4
+replace w4p219=4 if w4p219==5
+replace w4p219=5 if w4p219==6
+rename w4p219 commuschol
+replace w3s460=11 if w3s460==2
+replace w3s460=12 if w3s460==3
 replace w3s460=8 if w3s460==4
 replace w3s460=10 if w3s460==5
+replace w3s460=3 if w3s460==11
+replace w3s460=5 if w3s460==12
 replace w3s460=0 if w3s460==6
 label drop w3s460
 replace w4s106=0 if w4s106==6
@@ -1005,3 +1022,290 @@ replace w3s106=3.5 if w3s106==4
 replace w3s106=5 if w3s106==5
 replace w3s106=6 if w3s106==6
 label drop w3s106
+replace w4s106=. if w4s106==97|w4s106==99
+replace w3s126=. if w3s126==97|w3s126==99
+replace w4s106=w3s126 if w4s106==.
+replace w3s126=w4s106 if w3s126==.
+gen careclasstime= (w3s126+w4s106)/2
+replace w3tcs2=. if w3tcs2==97|w3tcs2==99
+replace w3tcs3=. if w3tcs3==97|w3tcs3==99
+replace w3tcs4=. if w3tcs4==97|w3tcs4==99
+replace w3tes2=. if w3tes2==97|w3tes2==99
+replace w3tes3=. if w3tes3==97|w3tes3==99
+replace w3tes4=. if w3tes4==97|w3tes4==99
+replace w3tms2=. if w3tms2==97|w3tms2==99
+replace w3tms3=. if w3tms3==97|w3tms3==99
+replace w3tms4=. if w3tms4==97|w3tms4==99
+replace w3tcs2=(w3tes2+w3tms2)/2 if w3tcs2==.
+replace w3tcs3=(w3tes3+w3tms3)/2 if w3tcs3==.
+replace w3tcs4=(w3tes4+w3tms4)/2 if w3tcs4==.
+replace w3tes2=(w3tcs2+w3tms2)/2 if w3tes2==.
+replace w3tes3=(w3tcs3+w3tms3)/2 if w3tes3==.
+replace w3tes4=(w3tcs4+w3tms4)/2 if w3tes4==.
+replace w3tms2=(w3tcs2+w3tes2)/2 if w3tms2==.
+replace w3tms3=(w3tcs3+w3tes3)/2 if w3tms3==.
+replace w3tms4=(w3tcs4+w3tes4)/2 if w3tms4==.
+gen test2wkhd=(w3tcs2+w3tes2+w3tms2)/3
+gen test2hw=(w3tcs3+w3tes3+w3tms3)/3
+gen test2askans=(w3tcs4+w3tes4+w3tms4)/3
+replace w3p201=. if w3p201==97|w3p201==99
+replace w3s460=. if w3s460==97|w3s460==99
+replace w4td07=. if w4td07==97|w4td07==99
+replace w4td06=. if w4td06==97|w4td06==99
+replace w4p225=. if w4p225==97|w4p225==99
+replace w4dtc08=. if w4dtc08==97|w4dtc08==99
+replace w3dtc08=. if w3dtc08==97|w3dtc08==99
+replace w3dtc08=w4dtc08 if w3dtc08==.
+replace w4dtc08=w3dtc08 if w4dtc08==.
+gen tefelparpreure=( w3dtc08+ w4dtc08)/2
+replace w4p229=. if w4p229==97|w4p229==99
+replace w4td05=. if w4td05==97|w4td05==99
+replace w3td08=. if w3td08==97|w3td08==99
+replace w3td07=. if w3td07==97|w3td07==99
+replace w3td08=w4td03 if w3td08==.
+replace w4td03=w3td08 if w4td03==.
+gen teselfdispil= (w4td03+ w3td08)/2
+replace w3s104=. if w3s104==97|w3s104==99
+replace w3p212=. if w3p212==97|w3p212==99
+replace w3p209=. if w3p209==97|w3p209==99
+replace w4p226=. if w4p226==97|w4p226==99
+replace w3s121=. if w3s121==97|w3s121==99
+replace w3s322=. if w3s322==97|w3s322==99
+replace w3s320=. if w3s320==97|w3s320==99
+replace w3s315=. if w3s315==97|w3s315==99
+replace w3s313=. if w3s313==97|w3s313==99
+replace w3s313=w3s320 if w3s313==.
+replace w3s320=w3s313 if w3s320==.
+replace w3s315=w3s322 if w3s315==.
+replace w3s322=w3s315 if w3s322==.
+gen fmhm=(w3s315+w3s322)/2
+gen workstudydisc=(w3s313+w3s320)/2
+replace w4p208=. if w4p208==97|w4p208==99
+replace w4p207=. if w4p207==97|w4p207==99
+replace w4dtc11=. if w4dtc11==97|w4dtc11==99
+replace w4mtc09=. if w4mtc09==97|w4mtc09==99
+replace w3s313=. if w3s313==97|w3s313==99
+egen teacher3askscore= rowmean(w4ctc09 w4etc09 w4mtc09 w4dtc11)
+replace w3ctc06=. if w3ctc06==97|w3ctc06==99
+replace w3mtc06=. if w3mtc06==97|w3mtc06==99
+replace w3etc06=. if w3etc06==97|w3etc06==99
+egen teacher2askscore= rowmean(w3ctc06 w3mtc06 w3etc06)
+replace w4dtc03=. if w4dtc03==97|w4dtc03==99
+replace w4mtc07=. if w4mtc07==97|w4mtc07==99
+replace w4ctc07=. if w4ctc07==97|w4ctc07==99
+replace w4etc07=. if w4etc07==97|w4etc07==99
+replace w3dtc03=. if w3dtc03==97|w3dtc03==99
+replace w3mtc05=. if w3mtc05==97|w3mtc05==99
+replace w3etc05=. if w3etc05==97|w3etc05==99
+replace w3ctc05=. if w3ctc05==97|w3ctc05==99
+egen teacher2classlevel= rowmean(w3dtc03 w3mtc05 w3etc05 w3ctc05)
+egen teacher3classlevel= rowmean(w4dtc03 w4mtc07 w4etc07 w4ctc07)
+replace w3ctc20=. if w3ctc20==97|w3ctc20==99
+replace w3ctc21=. if w3ctc21==97|w3ctc21==99
+replace w3etc20=. if w3etc20==97|w3etc20==99
+replace w3etc21=. if w3etc21==97|w3etc21==99
+replace w3mtc20=. if w3mtc20==97|w3mtc20==99
+replace w3mtc21=. if w3mtc21==97|w3mtc21==99
+replace w4ctc28=. if w4ctc28==97|w4ctc28==99
+replace w4ctc29=. if w4ctc29==97|w4ctc29==99
+replace w4etc28=. if w4etc28==97|w4etc28==99
+replace w4etc29=. if w4etc29==97|w4etc29==99
+replace w4mtc28=. if w4mtc28==97|w4mtc28==99
+replace w4mtc29=. if w4mtc29==97|w4mtc29==99
+egen teacher2classtest= rowmean(w3ctc20 w3etc20 w3mtc20)
+egen teacher2classhw= rowmean(w3ctc21 w3etc21 w3mtc21)
+egen teacher3classtest= rowmean(w4ctc28 w4etc28 w4mtc28)
+egen teacher3classhw= rowmean(w4ctc29 w4etc29 w4mtc29) 
+replace w4mtc24=. if w4mtc24==97|w4mtc24==99
+replace w4etc24=. if w4etc24==97|w4etc24==99
+replace w4ctc24=. if w4ctc24==97|w4ctc24==99
+replace w3etc16=. if w3etc16==97|w3etc16==99
+replace w3mtc16=. if w3mtc16==97|w3mtc16==99
+replace w3ctc16=. if w3ctc16==97|w3ctc16==99
+replace w4t217=. if w4t217==97|w4t217==99
+replace w4t216=. if w4t216==97|w4t216==99
+replace w3t317=. if w3t317==97|w3t317==99
+replace w3t316=. if w3t316==97|w3t316==99
+replace w3t311=. if w3t311==97|w3t311==99
+egen teacher2order= rowmean(w3etc16 w3mtc16 w3ctc16)
+egen teacher3order= rowmean(w4etc24 w4mtc24 w4ctc24)
+egen teacherlevelnequal= rowmean(w3t317 w4t217)
+egen teacherngoodlevel= rowmean(w4t216 w3t316)
+replace crammathhelp=. if crammathhelp==97|crammathhelp==99
+replace commuschol=. if commuschol==97|commuschol==99
+replace w3t317=. if w3t317==97|w3t317==99
+replace w3t316=. if w3t316==97|w3t316==99
+replace w3t311=. if w3t311==97|w3t311==99
+replace w4s314=. if w4s314==97|w4s314==99
+replace w4s315=. if w4s315==97|w4s315==99
+replace w4s319=. if w4s319==97|w4s319==99
+replace w3p602=. if w3p602==97|w3p602==99
+replace w4s444=. if w4s444==97|w4s444==99
+replace w4s451=. if w4s451==97|w4s451==99
+replace w4s452=. if w4s452==97|w4s452==99
+replace w4s453=. if w4s453==97|w4s453==99
+replace w4s455=. if w4s455==97|w4s455==99
+replace w4s456=. if w4s456==97|w4s456==99
+replace w4s457=. if w4s457==97|w4s457==99
+replace w4s458=. if w4s458==97|w4s458==99
+replace w4s459=. if w4s459==97|w4s459==99
+replace w4s409=. if w4s409==97|w4s409==99
+replace w4s335=. if w4s335==97|w4s335==99
+replace w3s4574=. if w3s4574==97|w3s4574==99
+replace beforecram =. if beforecram ==297
+replace cthm=17 if cthm==116
+replace mahm=17 if mahm==116
+replace mahm=15 if mahm==213
+replace mahm=. if mahm==499
+replace mahm=. if mahm==594
+replace w3s106=. if w3s106==97|w3s106==99
+label variable careclasstime "學校課輔時間"
+label variable test2wkhd "二年級老師評量學生努力"
+label variable test2hw "二年級老師評量學生作業"
+label variable test2askans "二年級老師評量學生主動回答"
+label variable tefelparpreure "老師感覺家長給的升學壓力"
+label variable teacherngoodlevel "老師擔心學生程度"
+label variable teacherlevelnequal "老師擔心學生程度不均"
+label variable teacher3order "老師三年級管秩序"
+label variable teacher2order "老師二年級管秩序"
+label variable teacher3classhw "老師三年級作業"
+label variable teacher3classtest "老師三年級考試"
+label variable teacher2classhw "老師二年級作業"
+label variable teacher2classtest "老師二年級考試"
+label variable teacher3classlevel "老師三年級感覺班級程度"
+label variable teacher2classlevel "老師二年級感覺班級程度"
+label variable teacher2askscore "老師二年級要求成績"
+label variable teacher3askscore "老師三年級要求成績"
+label variable fmhm "家人看功課"
+label variable workstudydisc "工作升學跟家長討論"
+label variable teselfdispil "老師感覺學生自律程度"
+drop if w4refuse==1
+replace cram12=1 if cram12==100
+replace cram3=1 if cram3==100
+replace cram12=0 if cram12==99
+replace cram3=0 if cram3==99
+replace cram12=. if cram12==198
+replace cram3=. if cram3==198
+egen cramdum=rowtotal(cramnum cram12 cram3)
+replace cramdum=1 if cramdum>=1
+drop w4s3243 w4s3244 w4s3245 w4etc321 w4etc322 w4etc323 w4etc324 w4etc325 w4ctc321 w4ctc322 w4ctc323 w4ctc324 w4ctc325 w4mtc321 w4mtc322 w4mtc323 w4mtc324 w4mtc325 w4dtc151 w4dtc152 ///
+w4dtc153 w4dtc154 w4dtc155 w3ctc20 w3ctc21 w3etc20 w3etc21 w3mtc20 w3mtc21 w4ctc28 w4ctc29 w4etc28 w4etc29 w4mtc28 w4mtc29 w3td08 w4td03 w3s126 w4s106 w3ctc30 w3ctc31 w3ctc32 w3ctc33 w3ctc34 ///
+w3ctc35 w3etc30 w3etc31 w3etc32 w3etc33 w3etc34 w3etc35 w3mtc30 w3mtc31 w3mtc32 w3mtc33 w3mtc34 w3mtc35 w3tcs2 w3tcs3 w3tcs4 w3tes2 w3tes3 w3tes4 w3tms2 w3tms3 w3tms4 w3ctc06 w3etc06 w3mtc06 ///
+w3etc36 w3etc40 w3mtc36 w3mtc40 w3ctc36 w3ctc40 w4s3282 w4s3283 w4s3284 w4s3285 w4s3262 w4s3263 w4s3264 w4s3265 w3pgrm w3clspgm w4pgrm w4clspgm w4h387a w4h387b w4h388a w4h388b w4h6231 w4h6251 ///
+w4h6252 w4h6253 w4h6254 w4h6255 w4h6256 w4h6258 w4ctc09 w4etc09 w4mtc09 w4dtc11 w3ctc05 w3etc05 w3mtc05 w3dtc03 w4etc07 w4ctc07 w4mtc07 w4dtc03 w4s411 w4s412 w4s413 w4h3631 w4h3632 w4h3634 w4h3272 ///
+w4h3273 w4h3274 w3s313 w3s315 w3s320 w3s322 w3p701 w3p711 w3p712 w4p316 w4p317 w4s407 w4s402 w4p421 w4p422 w4p2333 w4p2334 w4p2335 w3p705 w4p404 w4p107 w3p107 w3fahlth w3mohlth w3p110 w4p110 ///
+w4p2141 w4p2146 w3dtc08 w4dtc08 w4s1131 w4s1132 w4s1133 w4s1141 w4s1142 w4s1143 w4s1121 w4s1122 w4s1123 w3t316 w3t317 w4t216 w4t217 w3ctc16 w3mtc16 w3etc16 w4ctc24 w4etc24 w4mtc24 w4p318 w4p319 w4s110 ///
+w4s111 w4s1134 w4s1135 w4s1144 w4s1145 w4s1281 w4s1282 w4s1284 w4s1283 w4s1285 w3s3281 w3s3282 w3s3283 w3refuse w4refuse w4s104 w4s105 w4faedu w4moedu w3p605 w3p713 w4s1081 w4s1082 w4s1083 w4s102 w4s103 ///
+w4s1152 w4s1153 w4s1154 w3chin_id w3ctch_id w4chin_id w4ctch_id w4engl_id w4etch_id w4math_id w4mtch_id w3faocc w3faindu w3moocc w3moindu w3p709 w3p710 w3p512 w3p513 w3cls_id w4cls_id w4dtch_id w3p604 ///
+w3s427 w3s425 w3s426 w4p414 w4p234
+order stud_id w1s502 w3s480 w3s415 w4s449 w4s450 w3s101 w4s1292 w4s1293 w4s1294 w4s1301 w4s1302 w4s1303 w4s1304 w4s1305 w3sch_id w4sch_id w3s213 track w3priv w3urban3 w3w4chg w4priv w4urban3 w4scarea w4admarea ///
+indrs g1a g2a g3a coretotal cramnum cramdum cram12 cram3 w3s106 w4h1031 w4h319a w4h320a w4h362 w4h364 w4h365 w4h410 paredu scenhan scunipub scaward schelpcla scteamatt outclubatt beforecram ctclag mtclag ///
+etclag teststre stubestcl freecram ctcfor3 etcfor3 mtcfor3 dtcfor3 loan teclear w3s3315 teachcare classinter w3s3284 w3s3285 w4s2075 w4s2085 w4s2095 w4s2105 w4s2115 familyhealthcare w4s2065 discussenroll ///
+cthm mahm w4s444 w4s451 w4s452 w4s453 w4s455 w4s456 w4s457 w4s458 w4s459 w4s409 w4s335 w3s4574 w4dtc13 w3t4063 w4s314 w4s315 w4s319 w3p602 commuschol enhm w4p202 crammathhelp parentmathcramhelp w3t311 w4p207 ///
+w4p208 w4p209 w3dtc09 w3dtc13 w3s121 w4p226 w3p209 w3p212 w3s104 w3td07 w4td05 w4p229 w3dtc14 w4p225 w4td06 w4td07 w3p201 w3s460 careclasstime test2wkhd test2hw test2askans tefelparpreure teselfdispil fmhm ///
+workstudydisc teacher3askscore teacher2askscore teacher2classlevel teacher3classlevel teacher2classtest teacher2classhw teacher3classtest teacher3classhw teacher2order teacher3order teacherlevelnequal teacherngoodlevel 
+egen tclag=rowmean(etclag ctclag mtclag)
+replace dtcfor3=. if dtcfor3==485
+egen for3=rowmean(ctcfor3 mtcfor3 etcfor3 dtcfor3)
+drop etclag ctclag mtclag ctcfor3 mtcfor3 etcfor3 dtcfor3 w4s3221 w4s3222 w4s3223 w4s3224 w4s3225 w4s3226 w4s336 w4h147 w4h3271 wfaedu wmoedu ctclag2 ctclag3 etclag2 mtclag2 etclag3 mtclag3
+drop w3s111 w4ctc04 w4etc04 w4p2143 w4p412 w4p413 w4p423 w4p424
+label variable tclag "落後學生措施"
+label variable for3 "三年級考試措施"
+label variable paredu "家長教育程度"
+label variable scenhan "學校提升成績措施"
+label variable scunipub "公立大學升學率"
+label variable scaward "學校成績頒獎"
+label variable schelpcla "補救教學班級"
+label variable scteamatt "學生校隊參與"
+label variable outclubatt "學生校外社團參與"
+label variable beforecram "學生先前補習經驗"
+label variable teststre "學生準備考試技巧"
+label variable stubestcl "學生資優班"
+label variable freecram "想補科目數"
+label variable loan "學生貸款"
+label variable teclear "老師講解清楚"
+label variable teachcare "老師關心學生學習"
+label variable classinter "老師互動"
+label variable crammathhelp "學生覺得補數學幫助"
+label variable parentmathcramhelp "家長覺得補數學幫助"
+order w4p202 crammathhelp parentmathcramhelp freecram, after( cram3 )
+
+sum coretotal cramdum cramnum
+sum coretotal cramdum cramnum if w1s502==1
+sum coretotal cramdum cramnum if w1s502==2
+sum coretotal cramdum cramnum if w4priv==0
+sum coretotal cramdum cramnum if w4priv==1
+      
+reg coretotal cramnum w3s106 - for3 ,r
+pdslasso coretotal cramnum (w3s106 - for3),rob
+rlasso coretotal w3s106 - for3,rob
+rlasso cramnum w3s106 - for3,rob
+reg coretotal cramnum w4h362 w4h364 w4h365 paredu scunipub scteamatt teststre stubestcl loan teclear w3s3315 w4s458 w4s409 w4s335 w3s4574 w4s319 ///
+ w3p602 w3t311 w4p207 w4p208 w3td07 w4td05 w4p229 w3dtc14 w4p225 w3p201 test2wkhd test2askans workstudydisc teacher2askscore teacher3classlevel ///
+ teacher2classhw teacher3classtest teacher2order teacher3order teacherlevelnequal teacherngoodlevel
+
+reg coretotal cramnum w3s106 - for3 if w1s502==1 ,r
+pdslasso coretotal cramnum (w3s106 - for3) if w1s502==1,rob
+rlasso coretotal w3s106 - for3 if w1s502==1,rob
+rlasso cramnum w3s106 - for3 if w1s502==1,rob
+reg coretotal cramnum w4h362 w4h365 paredu scunipub scteamatt teststre stubestcl loan w3s3315 classinter w4s458 w4s409 w3s4574 w4dtc13 w4s319 w3p602 w3t311 ///
+  w4p207 w4p208 w3td07 w4td05 w4p229 test2wkhd test2askans teacher2askscore teacher3classlevel teacher3classtest teacher2order  teacher3order teacherngoodlevel ///
+  if w1s502==1,r
+
+reg coretotal cramnum w3s106 - for3 if w1s502==2 ,r
+pdslasso coretotal cramnum (w3s106 - for3) if w1s502==2,rob
+rlasso coretotal w3s106 - for3 if w1s502==2,rob
+rlasso cramnum w3s106 - for3 if w1s502==2,rob
+reg coretotal cramnum w4h362 w4h364 w4h365 paredu scunipub scteamatt teststre stubestcl w3s3315 w4s458 w4s409 w3s4574 w3p602 w4p207 w4p208 w3td07 ///
+ w4td05 w3dtc14 w4p225 w3p201 test2wkhd test2askans workstudydisc teacher2askscore teacher3classlevel teacher2classhw teacher3classtest teacher2order teacher3order teacherngoodlevel if w1s502==2,r
+
+reg coretotal cramnum w3s106 - for3 if w4priv==0 ,r
+pdslasso coretotal cramnum (w3s106 - for3) if w4priv==0,rob
+rlasso coretotal w3s106 - for3 if w4priv==0,rob
+rlasso cramnum w3s106 - for3 if w4priv==0,rob
+reg coretotal cramnum w4h362 w4h364 w4h365 paredu scunipub scteamatt teststre stubestcl w3s3315 w4s458 w4s409 w4s335 w3s4574 w3p602 w4p207 w4p208 w3td07 w4td05 ///
+w4p229 w4p225 w3p201 test2wkhd test2askans workstudydisc teacher2askscore teacher2classlevel teacher3classlevel teacher2classhw teacher3classtest teacher2order ///
+teacher3order teacherngoodlevel if w4priv==0,rob
+
+reg coretotal cramnum w3s106 - for3 if w4priv==1 ,r
+pdslasso coretotal cramnum (w3s106 - for3) if w4priv==1,rob
+rlasso coretotal w3s106 - for3 if w4priv==1,rob
+rlasso cramnum w3s106 - for3 if w4priv==1,rob
+reg coretotal cramnum w4h364 w4h410 paredu scunipub scaward teststre stubestcl w3s3285 w4s409 w3s4574 w3p602 w3t311 w4p207 w4p208 w3td07 w4td05 w3dtc14 /// 
+careclasstime test2wkhd test2askans teacher2askscore teacher3classlevel teacher2order teacher3order teacherngoodlevel tclag if w4priv==1,rob
+
+reg coretotal cramdum w3s106 - for3 ,r
+pdslasso coretotal cramdum (w3s106 - for3),rob
+rlasso coretotal w3s106 - for3,rob
+rlasso cramdum w3s106 - for3,rob
+reg coretotal cramdum w3s106 w4h362 w4h364 w4h365 paredu scunipub scteamatt teststre stubestcl loan teclear w3s3315 w4s458 w4s409 w4s335 w3s4574 w4s319 w3p602 w3t311 w4p207  ///
+ w4p208 w4p226 w3p209 w3td07 w4td05 w4p229 w3dtc14 w3p201 test2wkhd test2askans teselfdispil workstudydisc teacher2askscore teacher3classlevel teacher2classhw ///
+ teacher3classtest teacher2order teacher3order teacherlevelnequal teacherngoodlevel,r
+
+reg coretotal cramdum w3s106 - for3 if w1s502==1 ,r
+pdslasso coretotal cramdum (w3s106 - for3) if w1s502==1,rob
+rlasso coretotal w3s106 - for3 if w1s502==1,rob
+rlasso cramdum w3s106 - for3 if w1s502==1,rob 
+reg coretotal cramdum w4h362 w4h365 paredu scunipub scteamatt teststre stubestcl loan w3s3315 classinter w4s458 w4s409 w3s4574 w4dtc13 w4s319 w3p602 w3t311 w4p207 w4p208 w3p209 ///
+w3td07 w4td05 w4p229 test2wkhd test2askans teselfdispil teacher2askscore teacher3classlevel teacher3classtest teacher2order teacher3order teacherngoodlevel if w1s502==1,rob 
+
+reg coretotal cramdum w3s106 - for3 if w1s502==2 ,r
+pdslasso coretotal cramdum (w3s106 - for3) if w1s502==2,rob
+rlasso coretotal w3s106 - for3 if w1s502==2,rob
+rlasso cramdum w3s106 - for3 if w1s502==2,rob 
+reg coretotal cramdum w4h362 w4h364 w4h365 paredu scunipub scteamatt teststre stubestcl loan w3s3315 w4s458 w4s409 w3s4574 w3p602 w4p207 w4p208 w3td07 w4td05 w3dtc14 w3p201 test2wkhd test2askans ///
+ workstudydisc teacher2askscore teacher3classlevel teacher2classhw teacher3classtest teacher2order teacher3order teacherngoodlevel if w1s502==2,rob 
+
+reg coretotal cramdum w3s106 - for3 if w4priv==0 ,r
+pdslasso coretotal cramdum (w3s106 - for3) if w4priv==0,rob
+rlasso coretotal w3s106 - for3 if w4priv==0,rob
+rlasso cramdum w3s106 - for3 if w4priv==0,rob
+reg coretotal cramdum  w4h362 w4h364 w4h365 paredu scunipub scteamatt teststre stubestcl w3s3315 w4s458 w4s409 w4s335 w3s4574 w3p602 w4p207 w4p208 w3p209 w3td07 w4td05 w4p229 w3p201 test2wkhd ///
+test2askans teselfdispil workstudydisc teacher2askscore teacher2classlevel teacher3classlevel teacher2classhw teacher3classtest teacher2order teacher3order teacherngoodlevel if w4priv==0
+
+reg coretotal cramdum w3s106 - for3 if w4priv==1 ,r
+pdslasso coretotal cramdum (w3s106 - for3) if w4priv==1,rob
+rlasso coretotal w3s106 - for3 if w4priv==1,rob
+rlasso cramdum w3s106 - for3 if w4priv==1,rob
+reg coretotal cramdum  w3s106 w4h364 w4h410 paredu scunipub scaward teststre stubestcl loan w3s3285 w4s409 w3s4574 w3p602 w3t311 w4p207 w4p208 w3td07 w4td05 w3dtc14 careclasstime test2wkhd /// 
+test2askans teacher2askscore teacher3classlevel teacher2order teacher3order teacherngoodlevel tclag if w4priv==1 ,r
